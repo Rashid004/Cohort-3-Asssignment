@@ -29,14 +29,14 @@ program
   .description("count the number of lines in a file") // description of the command
   .argument("<file>", "file to count") // argument of the command
   .action((file) => {
-    fs.readFile("file.txt", "utf8", (err, data) => {
+    fs.readFile(file, "utf8", (err, data) => {
       if (err) {
         console.log(err);
       } else {
         const lines = data.split("\n").length;
-        console.log(`there are ${lines} lines in the ${file}`);
+        console.log(`there are ${lines + 1} lines in the ${file}`);
       }
     });
   });
 
-program.parse();
+program.parse(process.argv);
