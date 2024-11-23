@@ -1,8 +1,8 @@
 /** @format */
 
-import fs from "fs";
-import { Command } from "commander";
-import chalk from "chalk";
+const fs = require("fs");
+const { Command } = require("commander");
+const chalk = require("chalk");
 
 const program = new Command();
 
@@ -16,14 +16,13 @@ program
   .description("Count the number of lines in a file")
   .argument("<file>", "File to count")
   .action((file) => {
-    fs.readFile(file, "utf8", (err, data) => {
+    fs.readFile(file.txt, "utf8", (err, data) => {
       if (err) {
         console.log(err);
       } else {
-        const lines = data.split(" ").length;
-
-        console.log(chalk.green(`The file ${file} has ${lines} lines`));
+        const lines = data.split("\n").length;
+        console.log(chalk.green(`The file ${file.txt} has ${lines} lines`));
       }
     });
   });
-program.parse(process.argv);
+program.parse();

@@ -1,13 +1,29 @@
 /** @format */
 
-const express = require("express");
+// /** @format */
 
-const app = express();
+// const express = require("express");
 
-// create todo list app
+// const app = express();
 
-app.post("/api/todos", (req, res) => {
-  const todo = req.body;
-  res.json(todo);
-});
-app.listen(3000);
+// // create todo list app
+// let todos = [];
+
+// app.get("/todos", function (req, res) {
+//   res.json(todos);
+// });
+
+// app.post("/todos", (req, res) => {
+//   const todo = {
+//     id: todos.length + 1,
+//     title: req.body.title,
+//     complete: req.body.complete || false,
+//   };
+//   todos.push(todo);
+//   res.status(201).json(todo);
+// });
+
+// app.listen(3000);
+
+const chalk = require("chalk");
+console.log(chalk.red("Hello World"));
