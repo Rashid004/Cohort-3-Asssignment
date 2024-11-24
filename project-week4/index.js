@@ -27,7 +27,8 @@ app.post("/todos", (req, res) => {
     completed: req.body.completed || false,
   };
   todos.push(todo);
-  res.status(201).json(todo);
+  res.json({ msg: "Todo created successfully" });
+  res.status(201);
 });
 
 // update a todo
