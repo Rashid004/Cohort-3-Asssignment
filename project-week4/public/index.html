@@ -1,0 +1,249 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+    <style>
+      /* Container and Heading */
+      .container {
+        background-color: #ffffff;
+        padding: 25px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+        width: 50%;
+        margin: auto;
+      }
+
+      h1 {
+        font-size: 36px;
+        font-weight: bold;
+        color: #ec5e3e;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      /* Input and Button in one line */
+      .input-group {
+        display: flex;
+        align-items: center;
+      }
+
+      #todo-input {
+        flex-grow: 1;
+        padding: 12px 15px;
+        border: 2px solid #ec5e3e;
+        border-radius: 6px;
+        outline: none;
+        font-size: 16px;
+        margin-right: 10px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+      }
+
+      #todo-input:focus {
+        border-color: #ed502d;
+      }
+
+      .btn-add {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        background-color: #ec5e3e;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-transform: uppercase;
+      }
+
+      .btn-add:hover {
+        background-color: #d6492c;
+      }
+
+      /* Todo List */
+      .todo {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        transition: background-color 0.3s ease;
+      }
+
+      .todo:hover {
+        background-color: #f1f1f1;
+      }
+
+      .todo span {
+        font-size: 18px;
+        color: #333;
+        flex-grow: 1;
+      }
+
+      .completed {
+        color: green; /* Highlight completed items in green */
+        font-weight: bold;
+      }
+
+      button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        background-color: #ec5e3e;
+        color: #ffffff;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #d6492c;
+      }
+
+      button:first-of-type {
+        background-color: #4caf50;
+      }
+
+      button:first-of-type:hover {
+        background-color: #43a047;
+      }
+      #todo-list {
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Todo App</h1>
+      <form id="todo-form">
+        <div class="input-group">
+          <input
+            id="todo-input"
+            type="text"
+            name="title"
+            placeholder="Enter title"
+          />
+          <button type="submit" class="btn-add">Add Title</button>
+        </div>
+      </form>
+      <div id="todo-list"></div>
+    </div>
+    <script>
+      const API_URL = "http://localhost:3000/todos";
+
+      // DOM Elements
+      const todoForm = document.getElementById("todo-form");
+      const todoInput = document.getElementById("todo-input");
+      const todoList = document.getElementById("todo-list");
+
+      // Submit todo form
+      todoForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const title = todoInput.value.trim();
+        if (title) {
+          const todo = { title };
+          await createTodo(todo);
+          todoInput.value = "";
+          loadTodos();
+        }
+      });
+
+      // Load todos on page load
+      async function loadTodos() {
+        const todos = await fetchTodos();
+        renderTodos(todos);
+      }
+
+      // Fetch todos from API
+      async function fetchTodos() {
+        const response = await fetch(API_URL);
+        const todos = await response.json();
+        console.log("Created Todo:", todos);
+        return todos;
+      }
+
+      // Render todos on page
+      function renderTodos(todos) {
+        todoList.innerHTML = "";
+        todos.forEach((todo) => {
+          const todoElement = createTodoElement(todo);
+          todoList.appendChild(todoElement);
+        });
+      }
+
+      //Craete todo element
+      function createTodoElement(todo) {
+        const todoElement = document.createElement("div");
+        todoElement.classList.add("todo");
+
+        todoElement.innerHTML = `
+   <span class="${todo.completed ? "completed" : ""}">
+      ${todo.title}
+    </span>
+    <div>
+       <button onclick="toggleCompleted(${todo.id})">
+        ${todo.completed ? "Mark as Incomplete" : "Mark as Complete"}
+      </button>
+      <button onclick="deleteTodo(${todo.id})">
+        Delete
+      </button>
+    </div>
+  `;
+
+        return todoElement;
+      }
+
+      // Post todo to API
+      async function createTodo(todo) {
+        await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(todo),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+
+      // Toggle todo completed
+      async function toggleCompleted(id) {
+        const todo = await getTodo(id);
+        const updatedTodo = { ...todo, completed: !todo.completed };
+        await updateTodo(updatedTodo);
+        loadTodos();
+      }
+      //Delete todo
+      async function deleteTodo(id) {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        loadTodos();
+      }
+      // Get todo from API
+      async function getTodo(id) {
+        const response = await fetch(`${API_URL}/${id}`);
+        const todo = await response.json();
+        console.log(todo);
+        return todo;
+      }
+
+      // Update todo in API
+      async function updateTodo(todo) {
+        await fetch(`${API_URL}/${todo.id}`, {
+          method: "PUT",
+          body: JSON.stringify(todo),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      }
+      loadTodos();
+    </script>
+  </body>
+</html>

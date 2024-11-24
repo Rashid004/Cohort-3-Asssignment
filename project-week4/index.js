@@ -2,11 +2,15 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const serverStatic = require("serve-static");
+
 const app = express();
 
 // use body parser to parse json
 app.use(bodyParser.json());
 
+// User Serve Static to serve static files
+app.use(serverStatic("public"));
 // Create A Todo
 let todos = [];
 
