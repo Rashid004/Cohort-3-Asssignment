@@ -8,6 +8,7 @@ setInterval(() => {
   numberOfRequests = {};
 }, 1000);
 
+// Rate Limiting Middleware
 app.use((req, res, next) => {
   const userId = req.headers["user-id"];
 
