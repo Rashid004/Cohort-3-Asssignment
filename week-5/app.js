@@ -3,17 +3,18 @@
 const express = require("express");
 
 const app = express();
-// Create First Middleware also create end point that expose it
 
 let requestCount = 0;
 
+// Create First Middleware Function to Log Requests &  Incoming HTTP Request
 app.use(function (req, res, next) {
+  // *** Each Incoming HTTP Request ***
   const method = req.method;
   const url = req.url;
   const timeStamp = new Date().toISOString();
 
   console.log(`[${timeStamp}] ${method} ${url}`);
-  // Request Count Middleware
+  // *** Request Count ***
   // requestCount++;
   // console.log(`Request Count: ${requestCount}`);
   next();

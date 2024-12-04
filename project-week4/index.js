@@ -24,7 +24,7 @@ app.post("/todos", (req, res) => {
   const todo = {
     id: todos.length + 1,
     title: req.body.title || "",
-    completed: req.body.completed || false,
+    completed: req.body.completed || true,
   };
   todos.push(todo);
   res.json({ msg: "Todo created successfully" });
