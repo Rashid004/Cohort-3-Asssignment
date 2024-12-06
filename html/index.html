@@ -1,0 +1,73 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      dialog {
+        width: 300px;
+        height: 300px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+      input {
+        margin: 10px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        outline: none;
+      }
+
+      button {
+        margin: 10px;
+      }
+      #btn-show {
+        background-color: blue;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+      }
+      #btn-show:hover {
+        background-color: red;
+      }
+      #btn-submit {
+        background-color: green;
+        color: white;
+      }
+      #btn-submit:hover {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <dialog id="d">
+      <button onclick="d.close()">Close</button>
+      <form>
+        <input type="text" id="name" placeholder="Enter your name" />
+        <input type="text" id="email" placeholder="Enter your email" />
+        <input type="text" id="phone" placeholder="Enter your phone number" />
+        <button type="submit" id="btn-submit">Submit</button>
+      </form>
+    </dialog>
+    <button onclick="d.showModal()" id="btn-show">Show</button>
+    <button popovertarget="popinoff">Click me</button>
+    <div id="popinoff" popover>
+      <p>This is a popover</p>
+    </div>
+
+    <details>
+      <summary id="summary">Show details</summary>
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Minus maxime
+      temporibus sint sunt? Atque veritatis deleniti optio, quis consectetur
+      perferendis assumenda enim maxime repudiandae mollitia aliquam temporibus
+      ex fuga ducimus?
+    </details>
+  </body>
+</html>
