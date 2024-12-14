@@ -12,6 +12,10 @@ const JWT_SECRET = "rashidlove123";
 
 const users = [];
 
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
+
 // SignUp Users
 app.post("/signup", (req, res) => {
   const username = req.body.username;
@@ -41,13 +45,22 @@ app.post("/signin", (req, res) => {
   }
 });
 
-app.get("/me", (req, res) => {
-  const token = req.headers.authorization;
-  const userData = jwt.verify(token, JWT_SECRET);
-  if (userData.username) {
-    req.username = userData.username;
+function auth(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  const userDetails = jwt.verify(token, JWT_SECRET);
+  if (userDetails.username) {
+    req.username = userDetails.username;
+    next();
+  } else {
+    res.status(401).send({ message: "No token provided" });
   }
+}
+
+app.get("/me", auth, (req, res) => {
   const user = users.find((user) => user.username === req.username);
+  if (!user) {
+    return res.status(404).send({ message: "User not found" });
+  }
   res.send({ username: user.username, password: user.password });
 });
 
