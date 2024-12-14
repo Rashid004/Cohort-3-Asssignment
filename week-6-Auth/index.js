@@ -82,6 +82,18 @@ const users = [];
 // Secret key for signing JWT
 const JWT_SECRET = "USER_APP";
 
+// Check auth middleware
+function auth(req, res, next) {
+  const token = req.headers.authorization;
+  const userDetails = jwt.verify(token, JWT_SECRET);
+  if (userDetails.username) {
+    req.username = userDetails.username;
+    next();
+  } else {
+    res.status(401).send({ message: "No token provided" });
+  }
+}
+
 // signup route
 app.post("/signup", (req, res) => {
   const username = req.body.username;
@@ -112,17 +124,9 @@ app.post("/signin", (req, res) => {
   }
 });
 
-app.get("/me", (req, res) => {
-  const token = req.headers.authorization;
-  const userDetails = jwt.verify(token, JWT_SECRET);
-
-  const username = userDetails.username;
-  const user = users.find((user) => user.username === username);
-  if (user) {
-    res.json({ username: user.username, password: user.password });
-  } else {
-    res.status(404).send({ message: "User not found" });
-  }
+app.get("/me", auth, (req, res) => {
+  const user = users.find((user) => user.username === req.username);
+  res.send({ username: user.username, password: user.password });
 });
 
 app.listen(3000, () => {
