@@ -44,7 +44,7 @@ app.post("/signin", (req, res) => {
     res.status(403).send({ message: "Invalid Username or Password" });
   }
 });
-
+// Middleware Function
 function auth(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
   const userDetails = jwt.verify(token, JWT_SECRET);
