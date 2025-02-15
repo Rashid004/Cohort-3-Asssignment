@@ -17,6 +17,10 @@ const auth = (req, res, next) => {
   } else res.status(401).send({ message: "No token provided" });
 };
 
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
+
 // First Sign In user
 app.post("/signup", (req, res) => {
   const username = req.body.username;
@@ -36,9 +40,8 @@ app.post("/signin", (req, res) => {
     (u) => u.username === username && u.password === password
   );
   if (foundUser) {
-    const token = jwt.sign({ username }, jwt_secret);
-    res.json({ token: token });
-    console.log(token);
+    const token = jwt.sign({ username: foundUser.username }, jwt_secret);
+    return res.json({ token: token });
   } else {
     res.json({ message: "Invalid Credential" });
   }
