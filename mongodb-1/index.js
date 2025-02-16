@@ -1,7 +1,7 @@
 const express = require("express");
 // import schema modal from db
 const { UserModel, TodoModel } = require("./db");
-const { auth, JWT_SECRET } = require("./auth");
+const { auth, JWT_SECRET, jwt } = require("./auth");
 const mongoose = require("mongoose");
 const app = express();
 
@@ -29,6 +29,8 @@ app.post("/signup", async (req, res) => {
   });
 });
 
+app.use(express.static(__dirname + "/public"));
+
 app.post("/signin", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -42,10 +44,14 @@ app.post("/signin", async (req, res) => {
   if (user) {
     const token = jwt.sign({ id: user._id }, JWT_SECRET);
 
-    res.json({ token: token });
+    res.json({ Authorization: token });
   } else {
     res.status(403).json({ message: "Invalid Credential" });
   }
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
 });
 // get post todo
 app.post("/todo", auth, async (req, res) => {

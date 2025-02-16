@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication & Todo App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <script>
+    // User Sign Up
+    const signup = async () => {
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      try {
+        const response = await axios.post("http://localhost:3000/signup", {
+          name: name,
+          email: email,
+          password: password,
+        });
+        alert(response.data.message);
+        handleReset();
+        handleToggle();
+      } catch (err) {
+        console.log(err);
+        alert(err.response.data.message);
+      }
+    };
+
+    // User Sign In
+    const signin = async () => {
+      const email = document.getElementById("signin-email").value;
+      const password = document.getElementById("signin-password").value;
+      try {
+        const response = await axios.post("http://localhost:3000/signin", {
+          email: email,
+          password: password,
+        });
+        localStorage.setItem("Authorization", response.data.token);
+        alert("Sign in User Successful");
+        handleReset();
+      } catch (error) {
+        alert("Invalid Credential");
+      }
+    };
+
+    // Add todofunction
+    const addTodo = async () => {
+      const title = document.getElementById("input-title").value;
+      const done = false; // Default value for done
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/todo",
+          {
+            title: title,
+            done: done,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        alert(response.data.message);
+        document.getElementById("input-title").value = "";
+      } catch (error) {
+        console.log(error);
+        alert("Failed to add todo");
+      }
+    };
+
+    const getTodo = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/todos", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const todos = response.data.todos;
+        const todoList = document.querySelector(".todo-list");
+        todoList.innerHTML = ""; // Clear existing todos
+        todos.forEach((todo) => {
+          const todoItem = document.createElement("div");
+          todoItem.classList.add("todo-item");
+          todoItem.innerHTML = `
+            <label class="checkbox-container">
+              <input type="checkbox" ${todo.done ? "checked" : ""} />
+              <span class="checkmark"></span>
+              <span class="task-text">${todo.title}</span>
+            </label>
+          `;
+          todoList.appendChild(todoItem);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getTodo();
+
+    // After submit Empty input
+    const handleReset = () => {
+      document.getElementById("name").value = "";
+      document.getElementById("signin-email").value = "";
+      document.getElementById("signin-password").value = "";
+      document.getElementById("signup-email").value = "";
+      document.getElementById("signup-password").value = "";
+    };
+
+    // Toggle between Sign Up and Sign In forms
+    const handleToggle = () => {
+      const signupForm = document.getElementById("signup-form");
+      const signinForm = document.getElementById("signin-form");
+      signupForm.classList.toggle("hidden");
+      signinForm.classList.toggle("hidden");
+    };
+  </script>
+  <body>
+    <div class="container">
+      <div class="card-container">
+        <!-- Sign Up Form -->
+        <div class="auth-card" id="signup-form">
+          <h2 class="title">Sign Up</h2>
+          <div class="form-group">
+            <div class="input-group">
+              <i class="icon user-icon"></i>
+              <input
+                type="text"
+                placeholder="Full Name"
+                class="form-input"
+                id="name"
+              />
+            </div>
+            <div class="input-group">
+              <i class="icon email-icon"></i>
+              <input
+                type="email"
+                placeholder="Email Address"
+                class="form-input"
+                id="signup-email"
+              />
+            </div>
+            <div class="input-group">
+              <i class="icon lock-icon"></i>
+              <input
+                type="password"
+                placeholder="Password"
+                class="form-input"
+                id="signup-password"
+              />
+            </div>
+          </div>
+          <button class="submit-button" onclick="signup()">Sign Up</button>
+          <p class="toggle-text">
+            Already have an account?
+            <button class="toggle-button" onclick="handleToggle()">
+              Sign In
+            </button>
+          </p>
+        </div>
+
+        <!-- Sign In Form -->
+        <div class="auth-card hidden" id="signin-form">
+          <h2 class="title">Sign In</h2>
+          <div class="form-group">
+            <div class="input-group">
+              <i class="icon email-icon"></i>
+              <input
+                type="email"
+                placeholder="Email Address"
+                class="form-input"
+                id="signin-email"
+              />
+            </div>
+            <div class="input-group">
+              <i class="icon lock-icon"></i>
+              <input
+                type="password"
+                placeholder="Password"
+                class="form-input"
+                id="signin-password"
+              />
+            </div>
+          </div>
+          <button class="submit-button" onclick="signin()">Sign In</button>
+          <p class="toggle-text">
+            Don't have an account?
+            <button class="toggle-button" onclick="handleToggle()">
+              Sign Up
+            </button>
+          </p>
+        </div>
+
+        <!-- Todo Card -->
+        <div class="todo-card">
+          <h2 class="title">My Tasks</h2>
+          <div class="todo-input-container">
+            <div class="input-group">
+              <i class="icon plus-icon"></i>
+              <input
+                type="text"
+                placeholder="Add a new task"
+                class="form-input"
+                id="input-title"
+              />
+            </div>
+            <button class="add-button" onclick="addTodo()">Add</button>
+          </div>
+          <div class="todo-list">
+            <div class="todo-item"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
