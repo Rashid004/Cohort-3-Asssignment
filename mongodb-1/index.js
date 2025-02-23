@@ -71,11 +71,12 @@ app.post("/todo", auth, async (req, res) => {
 app.get("/todos", auth, async (req, res) => {
   const userId = req.userId;
 
-  const todo = await TodoModel.find({
-    userId,
-  });
-
-  res.json({ Todo: todo });
+  try {
+    const todos = await TodoModel.find({ userId: userId });
+    res.json({ todos: todos });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch todos" });
+  }
 });
 
 app.listen(3000);

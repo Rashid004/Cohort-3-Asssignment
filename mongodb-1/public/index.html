@@ -7,7 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
     <link rel="stylesheet" href="./style.css" />
   </head>
-
   <script>
     // User Sign Up
     const signup = async () => {
@@ -38,15 +37,18 @@
           email: email,
           password: password,
         });
-        localStorage.setItem("Authorization", response.data.token);
+        localStorage.setItem("token", response.data.token);
         alert("Sign in User Successful");
         handleReset();
+        showTodoCard();
+
+        getTodos(); // Fetch todos after successful sign-in
       } catch (error) {
         alert("Invalid Credential");
       }
     };
 
-    // Add todofunction
+    // Add Todo
     const addTodo = async () => {
       const title = document.getElementById("input-title").value;
       const done = false; // Default value for done
@@ -65,17 +67,24 @@
         );
         alert(response.data.message);
         document.getElementById("input-title").value = "";
+        getTodos(); // Fetch updated list of todos
       } catch (error) {
         console.log(error);
         alert("Failed to add todo");
       }
     };
 
-    const getTodo = async () => {
+    // Get Todos
+    const getTodos = async () => {
+      const token = `Bearer ${localStorage.getItem("token")}`;
+      if (!token) {
+        hideTodoCard();
+        return;
+      }
       try {
         const response = await axios.get("http://localhost:3000/todos", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: token,
           },
         });
         const todos = response.data.todos;
@@ -93,14 +102,13 @@
           `;
           todoList.appendChild(todoItem);
         });
+        showTodoCard();
       } catch (error) {
         console.log(error);
+        alert("Failed to fetch todos");
       }
     };
 
-    getTodo();
-
-    // After submit Empty input
     const handleReset = () => {
       document.getElementById("name").value = "";
       document.getElementById("signin-email").value = "";
@@ -116,6 +124,27 @@
       signupForm.classList.toggle("hidden");
       signinForm.classList.toggle("hidden");
     };
+
+    // Show Todo Card and Hide Auth Forms
+    const showTodoCard = () => {
+      document.querySelector(".todo-card").style.display = "block";
+      document.querySelector(".auth-card").style.display = "none";
+    };
+
+    // Hide Todo Card and Show Auth Forms
+    const hideTodoCard = () => {
+      document.querySelector(".todo-card").style.display = "none";
+      document.querySelector(".auth-card").style.display = "block";
+    };
+
+    // Fetch todos on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("token")) {
+        getTodos();
+      } else {
+        hideTodoCard();
+      }
+    });
   </script>
   <body>
     <div class="container">
@@ -194,7 +223,7 @@
         </div>
 
         <!-- Todo Card -->
-        <div class="todo-card">
+        <div class="todo-card" style="display: none">
           <h2 class="title">My Tasks</h2>
           <div class="todo-input-container">
             <div class="input-group">
@@ -209,7 +238,13 @@
             <button class="add-button" onclick="addTodo()">Add</button>
           </div>
           <div class="todo-list">
-            <div class="todo-item"></div>
+            <div class="todo-item">
+              <label class="checkbox-container">
+                <input type="checkbox" />
+                <span class="checkmark"></span>
+                <span class="task-text">Complete project</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
