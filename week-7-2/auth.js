@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = "rashidlovekiara";
 
 function auth(req, res, next) {
-  console.log("Headers Received:", req.headers); // Debugging headers
+  console.log("Headers Received:", req.headers);
 
   const token = req.headers.authorization;
   console.log("Extracted Token:", token); // Debugging token

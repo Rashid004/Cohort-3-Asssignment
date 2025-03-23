@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const Schema = mongoose.Schema;
 
 const ObjectId = Schema.ObjectId;
@@ -15,6 +14,7 @@ const Todo = new Schema({
   title: String,
   description: String,
   done: Boolean,
+  createdAt: { type: Date, default: Date.now },
 });
 
 const UserModel = mongoose.model("users", User);
